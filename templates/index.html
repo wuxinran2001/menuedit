@@ -561,6 +561,13 @@ $(document).ready(function(e) {
 <div id="mainFrame"></div>
 </body>
 <script>
+  function sleep(delay) {
+    var start = (new Date()).getTime();
+    while ((new Date()).getTime() - start < delay) {
+      continue;
+    }
+  }
+
   function fake_click(obj) {
     var ev = document.createEvent("MouseEvents");
     ev.initMouseEvent(
@@ -592,7 +599,8 @@ $(document).ready(function(e) {
     var request = new XMLHttpRequest();
     request.open('POST', '/save');
     request.send(fm);
-    window.location.href="/";
+    sleep(3000);
+    window.location.reload();
   });
 
   
