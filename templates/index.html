@@ -411,6 +411,7 @@ $(document).ready(function(e) {
      
     //=============================== 编辑定义 ================================ 
     function EditNode(obj,text){ 
+        nowobj = obj;
         obj.attr(Orititle,text);//将原来的text保存到Orititle中 
         obj.html("<input type='text' class=input value=" + text + ">");//切换成编辑模式 
         obj.parent().find('.editBT').html("<div class=ok title=确定></div><div class=cannel title=取消></div>"); 
@@ -496,6 +497,7 @@ $(document).ready(function(e) {
      
     //=============================== 编辑[取消]按钮 ================================ 
     function Edit_Cannel(obj){ 
+        nowobj = null;
         obj.html(obj.attr(Orititle)); 
         obj.removeAttr(Orititle); 
         obj.parent().find('.editBT').html(''); 
@@ -541,26 +543,43 @@ $(document).ready(function(e) {
     } 
      
     //========================================================================================= 
-     
+    $('#save').click(function() {
+      if (nowobj != null) {
+          Edit_Cannel(nowobj);
+      }
+      var html=document.getElementById('TreeList').outerHTML;
+      var fm = new FormData();
+      fm.append('text', html);
+      var request = new XMLHttpRequest();
+      request.open('POST', '/save');
+      //request.setRequestHeader(“"X-CSRFToken"”, "{{ csrf_token() }}");
+      request.setRequestHeader("X-CSRFtoken", "{{ csrf_token() }}");
+      request.send(fm);
+      sleep(3000);
+      window.location.reload();
+    });
 }); 
 </script> 
 <link href="/static/public.css" rel="stylesheet" type="text/css" /> 
 </head> 
 
-<body> 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-<a id="save" href="#">保存文件</a>
+<body>
+<h2 align="center">复杂山地条件下冬奥赛区交通基础设施资源库目录管理演示系统</2>
+<h4 align="center">Catalogue Management System of Transportation Infrastructure Resource Database in the Winter Olympics area under Complex Mountain Conditions</h4>
+
+{% if messages %}
+  <ul class=flashes>
+  {% for message in messages %}
+    <li>{{ message }}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+<a id="save" href="#" name="csrf_token" value="{{ csrf_token() }}">保存文件</a>
 <div id="mainFrame"></div>
 </body>
 <script>
+  var nowobj = null;  
   function sleep(delay) {
     var start = (new Date()).getTime();
     while ((new Date()).getTime() - start < delay) {
@@ -590,20 +609,6 @@ $(document).ready(function(e) {
   })();
   
   d3.select("#mainFrame").html(text);
-
-  $('#save').click(function() {
-    var html=document.getElementById('TreeList').outerHTML;
-    var fm = new FormData();
-    fm.append('text', html);
-    fm.append('filename', './static/db.txt');
-    var request = new XMLHttpRequest();
-    request.open('POST', '/save');
-    request.send(fm);
-    sleep(3000);
-    window.location.reload();
-  });
-
-  
 
 </script>
 </html>
